@@ -1,0 +1,17 @@
+{
+  "name": "lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "buildUrl.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@lucia-auth/adapter-mongoose": "^3.0.1",
+    "lucia": "^2.7.6",
+    "lucia-auth": "^1.8.0"
+  }
+}
