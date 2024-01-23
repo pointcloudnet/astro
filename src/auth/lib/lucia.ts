@@ -1,9 +1,14 @@
-import { lucia, type InitializeAdapter, type Adapter } from 'lucia';
-import { astro } from 'lucia/middleware';
+// import { lucia, type InitializeAdapter, type Adapter } from 'lucia';
+import { lucia } from 'lucia';
+// import { astro } from 'lucia/middleware';
 // import { mongoose } from '../adapter-mongoose/dist/mongoose';
 // import { Model, mongoose } from '../adapter-mongoose/dist/index';
 import { mongoose } from '@lucia-auth/adapter-mongoose';
 import mongodb from 'mongoose';
+import '../schema/schema';
+
+
+/*
 
 const User = new mongodb.model(
     "User"
@@ -74,12 +79,31 @@ export const auth = lucia({
         };
     }
 });
-
+*/
 /*
-mongoose: (models: {
-    User: Model
-    ,Session: Model | null
-    ,Key: Model
+const mongoose = (models: {
+    User: Model;
+    Session: Model | null;
+    Key: Model;
 }) => InitializeAdapter<Adapter>;
 */
+
+const User = mongodb.model('User');
+const Key = mongodb.model('Key');
+const Session = mongodb.model('Session');
+
+export const auth = lucia({
+	// adapter: mongoose(mongoose)
+	adapter: mongoose({ User, Key, Session})
+	,env: import.meta.env.DEV ? "DEV" : "PROD"
+	,middleware: astro()
+	,getUserAttributes(databaseUser) {
+		return {
+			username: databaseUser.username
+		};
+	}
+});
+// const client = await mongodb.connect();
+
+mongodb.connect('mongodb://black/mongodb00', null);
 export type Auth = typeof auth;

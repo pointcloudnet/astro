@@ -1,0 +1,88 @@
+---
+// import '../styles/styles.css';
+import '../styles/signup.css';
+import { auth } from '../auth/lib/lucia';
+
+let errorMessage: string | null = null;
+
+// check for form submissions
+if (Astro.request.method === "POST") {
+	const formData = await Astro.request.formData();
+	const username = formData.get("username");
+	const password = formData.get("password");
+	// basic check
+	const validUsername =
+		typeof username === "string" &&
+		username.length >= 4 &&
+		username.length <= 31;
+	const validPassword =
+		typeof password === "string" &&
+		password.length >= 6 &&
+		password.length <= 255;
+	if (validUsername && validPassword) {
+		try {
+			const user = await auth.createUser({
+				key: {
+					providerId: "username", // auth method
+					providerUserId: username.toLowerCase(), // unique id when using "username" auth method
+					password // hashed by Lucia
+				},
+				attributes: {
+					username
+				}
+			});
+			const session = await auth.createSession({
+				userId: user.userId,
+				attributes: {}
+			});
+			Astro.locals.auth.setSession(session); // set session cookie
+			return Astro.redirect("/", 302); // redirect to profile page
+		} catch (e) {
+			// this part depends on the database you're using
+			// check for unique constraint error in user table
+			if (
+				e /* instanceof SomeDatabaseError 
+                
+                &&
+				e.message === USER_TABLE_UNIQUE_CONSTRAINT_ERROR
+			*/ 
+			)
+            /* {
+				errorMessage = "Username already taken";
+			} 
+            else */
+            {
+
+				errorMessage = "An unknown error occurred";
+			}
+		}
+	} else {
+		errorMessage = "Invalid input";
+	}
+}
+---
+<div id="container" class="container">
+    <form id="form" class="form" method="post">
+    <!-- <h1>Sign up</h1> -->
+        <!-- <label for="username">Username</label> -->
+        <!-- <input name="username" id="username" /><br /> -->
+        <div class="form-control">
+            <div class="icon">
+                <input type="text" id="username" name="username" placeholder="Username" /><i class="far fa-question-circle"></i>
+            </div>
+            <small>Error message</small>
+          </div>
+          <!-- <label for="password">Password</label> -->
+        <div class="form-control">
+            <div class="icon">
+                <input type="text" name="password" id="password" placeholder="Password" /><i class="far fa-question-circle"></i>
+            </div>
+            <small>Error message</small>
+          </div>
+        <!-- d<input type="password" name="password" id="password" /><br /> -->
+        <!-- <input type="submit" value="Submit"/> -->
+        <button type="submit" value="Submit">Submit</button>
+    </form>
+    <a href="/login">Sign in</a>
+
+</div>../auth/lib/lucia
