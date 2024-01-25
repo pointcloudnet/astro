@@ -65,6 +65,16 @@ export const Key = mongodb.model(
 	)
 );
 
+/*
 export const connect = async () => {
 	await mongodb.connect(process.env.MONGODB_URL as any);
+};
+*/
+export const Connection = {
+	connect: async () => {
+	await mongodb.connect(process.env.MONGODB_URL as any);
+	},
+	disconnect: async () => {
+	await mongodb.connection.close();
+	}
 };
